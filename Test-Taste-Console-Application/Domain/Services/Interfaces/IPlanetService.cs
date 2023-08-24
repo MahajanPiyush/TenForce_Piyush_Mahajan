@@ -10,5 +10,6 @@ namespace Test_Taste_Console_Application.Domain.Services.Interfaces
     public interface IPlanetService
     {
         IEnumerable<Planet> GetAllPlanets();
+        decimal GetAverageMoonGravityForPlanet(ICollection<Moon> Moons);
     }
 }

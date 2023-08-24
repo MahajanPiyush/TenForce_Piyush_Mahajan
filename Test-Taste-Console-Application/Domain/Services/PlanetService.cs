@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using Newtonsoft.Json;
 using Test_Taste_Console_Application.Constants;
@@ -86,6 +89,57 @@ namespace Test_Taste_Console_Application.Domain.Services
             return stringBuilder
                 .ToString()
                 .Normalize(NormalizationForm.FormC);
+        }
+
+        /// <summary>
+        /// Method to Calculate Avergae Moon Gravity of Planet
+        /// </summary>
+        /// <param name="Moons"></param>
+        /// <returns>decimal</returns>
+        public decimal GetAverageMoonGravityForPlanet(ICollection<Moon> Moons)
+        {
+            decimal avergaeOfMoonGravityOfPlanet = 0;
+            decimal sumOfMoonGravityOfPlanet = 0;
+            try
+            {
+                //Loop through all the moons of planet to get gravity for each moon
+                foreach (var obj_moon in Moons)
+                {
+                    //calling api 
+                    var response = _httpClientService.Client
+                        .GetAsync(UriPath.GetAvergaeMoonGravity + obj_moon.Id)
+                        .Result;
+
+                    //If the status code isn't 200-299, then the function returns an empty collection.
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Logger.Instance.Warn($"{LoggerMessage.GetRequestFailed}{response.StatusCode}");
+                    }
+                    else
+                    {
+                        var content = response.Content.ReadAsStringAsync().Result;
+                        //The JSON converter uses DTO's, that can be found in the DataTransferObjects folder, to deserialize the response content.
+                        var results = JsonConvert.DeserializeObject<PlanetsMoonobject>(content);
+
+                        if (results != null)
+                        {
+                            //Suming up all the moon gravity of Planet
+                            sumOfMoonGravityOfPlanet += results.gravity;
+                        }
+                    }
+
+
+                }
+
+                //Average is sum of gravity upon total moons
+                avergaeOfMoonGravityOfPlanet = Math.Round((sumOfMoonGravityOfPlanet / Moons.Count()),4);
+            }
+            catch(Exception ex)
+            {
+                Logger.Instance.Warn($"{"Exception Occured in GetAverageMoonGravityForPlanet Method"}{ex.Message}");
+                sumOfMoonGravityOfPlanet = 0;
+            }
+            return avergaeOfMoonGravityOfPlanet;
         }
     }
 }

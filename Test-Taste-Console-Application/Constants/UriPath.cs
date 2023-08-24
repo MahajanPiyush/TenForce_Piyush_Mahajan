@@ -12,5 +12,8 @@
                                                "?data=id,mass,massValue,massExponent,massValue&filter[]=aroundPlanet,gt,null";
 
         public const string GetMoonByIdQueryParameters = BodiesUri + "/";
+
+        public const string GetAvergaeMoonGravity =
+            BodiesUri + "/";
     }
 }

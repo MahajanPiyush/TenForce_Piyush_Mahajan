@@ -166,7 +166,14 @@ namespace Test_Taste_Console_Application.Domain.Services
             {
                 if(planet.HasMoons())
                 {
-                    ConsoleWriter.CreateText(new string[] { $"{planet.Id}", $"{planet.AverageMoonGravity}" }, columnSizes);
+                    //calling GetAverageMoonGravityForPlanet Method to get avergae moon gravity for Planet
+                    decimal avergeMoonGravity = _planetService.GetAverageMoonGravityForPlanet(planet.Moons);
+
+                    //commented old code
+                    //ConsoleWriter.CreateText(new string[] { $"{planet.Id}", $"{planet.AverageMoonGravity}" }, columnSizes);
+
+                    //new code
+                    ConsoleWriter.CreateText(new string[] { $"{planet.Id}", $"{avergeMoonGravity}" }, columnSizes);
                 }
                 else
                 {
